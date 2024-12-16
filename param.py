@@ -18,13 +18,17 @@ class Param(object):
 
 class XLS(Param):
     def __init__(self, paramConf):
-        '''
-        :param paramConf: xls 文件位置(绝对路径)
-        '''
-        self.paramConf = paramConf
-        self.paramfile = self.paramConf['file']
-        self.data = xlrd.open_workbook(self.paramfile)
-        self.getParamSheet(self.paramConf['sheet'])
+        try:
+            self.paramConf = paramConf
+            self.paramfile = self.paramConf['file']
+            self.data = xlrd.open_workbook(self.paramfile)
+            self.getParamSheet(self.paramConf['sheet'])
+        except KeyError as e:
+            print(f"配置参数中缺少必要的键 {e}")
+        except FileNotFoundError:
+            print(f"指定的Excel文件 {self.paramfile} 不存在")
+        except xlrd.biffh.XLRDError as e:
+            print(f"读取Excel文件出现错误: {e}")
 
     def getParamSheet(self, nsheets):
         '''
